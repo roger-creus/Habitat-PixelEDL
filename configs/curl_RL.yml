@@ -1,0 +1,26 @@
+experiment: 'curl_DEF'
+environment: 'MineRLNavigate-v0'
+trajectories: ['trajectories1']
+epochs: 300
+data_type: 'pixel'
+batch_size: 128
+lr: 0.001
+split: 0.90
+tau: 0.005
+soft_update: 2
+img_size: 256
+delay: yes
+curl:
+  k_std: 5
+  k_mean: 15
+  z_dim: 128
+test:
+  type: 'index'  # [index, reward, embed]
+  shuffle: no
+  limit: null
+  path_goal_states: './goal_states/white_DEF'
+  # path_weights: './curl_1.0/mineRL/1042bq9w/checkpoints/epoch=499-step=302999.ckpt'
+ # path_weights: './curl_1/checkpoints/epoch=299-step=2099.ckpt'
+  #path_weights: './curl_ex/habitat/1qhd4ysa/checkpoints/epoch=27-step=58743.ckpt'
+  #path_weights: 'src/results/curl_3/habitat/4qf02puy/checkpoints/epoch=93-step=198339.ckpt'
+  path_weights: 'epoch=89-step=189899.ckpt'
