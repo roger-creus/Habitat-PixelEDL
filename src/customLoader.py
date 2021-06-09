@@ -67,16 +67,18 @@ class CustomHabitatData(Dataset):
 
     def getImages(self, idx, key_idx):
         
-        query = torch.tensor(self.data[idx])
-        key = torch.tensor(self.data[key_idx])
+        query = self.data[idx]
+        key = self.data[key_idx]
         
 
-        #if self.transform is not None:
+        if self.transform is not None:
             #DEPTH
-            #key = self.transform(key)
-            #query = self.transform(query)
-            #key = torch.cat((self.transform(key[:,:,0:3]), self.transform(key[:,:,3:6])))
-            #query = torch.cat((self.transform(query[:,:,0:3]), self.transform(query[:,:,3:6])))
+            key = self.transform(key)
+            query = self.transform(query)
+            #print(key[:,:,0:3].shape, key[:,:,3:6].shape, torch.tensor(key[:,:,6]).unsqueeze(2).shape)
+            #print(self.transform(key[:,:,0:3]).shape)
+            #key = torch.cat((self.transform(key[:,:,0:3]), self.transform(key[:,:,3:6]), torch.tensor(key[:,:,6]).unsqueeze(0)), dim=0)
+            #query = torch.cat((self.transform(query[:,:,0:3]), self.transform(query[:,:,3:6]), torch.tensor(query[:,:,6]).unsqueeze(0)), dim=0)
         return key, query
 
 
@@ -93,7 +95,7 @@ class CustomHabitatData(Dataset):
         #IF EXPERTS:
         #data = [y for x in data for y in x]
         #4 IF WE CONSIDER DEPTH
-        data = np.array(data).reshape(-1, 256, 256, 1)
+        data = np.array(data).reshape(-1, 256, 256, 3)
         self.data = data
         self.list_idxs = list_idxs
 

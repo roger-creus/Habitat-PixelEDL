@@ -1,0 +1,22 @@
+lmdb>=0.98
+numba>=0.44.0
+gym>=0.17.3
+ifcfg
+tensorflow==1.13.1
+imageio>=2.2.0
+tb-nightly
+opencv-python>=3.3.0
+numpy-quaternion>=2019.3.18.14.33.20
+yacs>=0.1.5
+scipy>=1.0.0
+pickle5; python_version < '3.8'
+imageio-ffmpeg>=0.2.0
+numpy>=1.16.1
+torch>=1.3.1
+tqdm>=4.0.0
+moviepy>=1.0.1
+webdataset==0.1.40
+attrs>=19.1.0
+
+[:python_version < "3.8"]
+pickle5

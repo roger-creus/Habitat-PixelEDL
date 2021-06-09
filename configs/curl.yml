@@ -1,0 +1,42 @@
+experiment: 'curl_white_full'
+#experiment: 'curl_semantic_DEF'
+environment: 'MineRLNavigate-v0'
+trajectories: ['trajectories_full']
+#trajectories: ['trajectories_semantic']
+data_type: 'pixel'
+epochs: 300
+batch_size: 32
+lr: 0.001
+split: 0.90
+tau: 0.005
+soft_update: 2
+img_size: 256
+delay: yes
+
+curl:
+  k_std: 5
+  k_mean: 15
+  data_type: 'pixel'
+  z_dim: 128
+test:
+  type: 'embed'  # [index, reward, embed]
+  shuffle: yes
+  limit: 2500
+  #path_goal_states: './goal_statesd/white'
+  #path_goal_states: './goal_states/white_DEF/'
+  #path_goal_states: './goal_states/white_depth/'
+  #path_goal_states: './goal_states/circular_goals/'
+  path_goal_states: './goal_states/whiteFull_goals'
+
+  #path_weights: './wandb/run-20210605_114534-reun7c54/files/habitat/reun7c54/checkpoints/epoch=50-step=107609.ckpt'
+  #CIRCULAR
+  #path_weights: './wandb/run-20210605_171249-hznwzib2/files/habitat/hznwzib2/checkpoints/epoch=148-step=314389.ckpt'
+  path_weights: './wandb/run-20210606_160924-bvuwrg01/files/habitat/bvuwrg01/checkpoints/epoch=191-step=146879.ckpt'
+  #path_weights: './curl_DEF/habitat/s5hd80fo/checkpoints/epoch=89-step=189899.ckpt'
+  #path_weights: './curl_semantic/habitat/1hgdnl8c/checkpoints/epoch=142-step=301729.ckpt' 
+  #path_weights: './curl_rgbsemantic/dhabitat/2lwo23xi/checkpoints/epoch=93-step=178505.ckpt'
+  #path_weights: './curl_depth/habitat/2x5a1vjl/checkpoints/epoch=268-step=340553.ckpt'
+  #path_weights: './curl_depth/habitat/3sj896jw/checkpoints/epoch=299-step=632999.ckpt'
+  #path_weights: './curl_3/habitat/4qf02puy/checkpoints/epoch=93-step=198339.ckpt'
+  #path_weights: './curl_def/habitat/2wzsrxnl/checkpoints/epoch=56-step=120269.ckpt'
+  #path_weights: './curl_skok/habitat/3bnst7c3/checkpoints/epoch=147-step=312279.ckpt'

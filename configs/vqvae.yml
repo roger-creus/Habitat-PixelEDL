@@ -1,0 +1,50 @@
+experiment: 'vqvae_circular_def'
+#experiment: 'vqvae_semantic'
+environment: 'MineRavigate-v0'
+trajectories: ['trajectories_circular']
+#trajectories: ['trajectories_semantic']
+data_type: 'pixel' # pixel / coord / pixelcoord
+delay: yes
+epochs: 300
+split: 0.90
+lr: 0.001
+batch_size: 256
+k_std: 5
+k_mean: 15
+coord_cost: 0.01
+vqvae:
+  img_size: 256
+  num_hiddens: 64
+  num_residual_hiddens: 32
+  num_residual_layers: 2
+  embedding_dim: 256
+  num_embeddings: 10
+  commitment_cost: 0.25
+  decay: 0.99
+  reward_type: 'sparse'
+test:
+  type: 'index'  # [index, reward, embed]
+  shuffle: no
+  limit: null
+    # path_weights: './vqvae_0.3/m2 ineRL/1c4o6jgy/checkpoints/epoch=499-step=37999.ckpt'
+  # path_weights: './vqvae_1.0/mineRL/32lwarh6/checkpoints/epoch=199-step=21599.ckpt'
+  # path_weights: './vqvae_1.1/mineRL/315ksn7x/checkpoints/epoch=203-step=22031.ckpt'
+  # path_weights: './vqvae_1.2/mineRL/3qtc0w0y/checkpoints/epoch=131-step=14255.ckpt'
+  # path_weights: './vqvae_2.0/mineRL/kbsmulhw/checkpoints/epoch=49-step=4499.ckpt'
+  # path_weights: './vqvae_sweep_1/mineRL/96qj9btc/checkpoints/epoch=44-step=4859.ckpt'
+  # path_weights: 'vqvae_3.1/mineRL/8ykl37mx/checkpoints/epoch=59-step=5399.ckpt'
+  # path_weights: 'vqvae_sweep_0/mineRL/8bbcrmgb/checkpoints/epoch=34-step=3149.ckpt'
+  #path_weights: 'vqvae_1/habitat/2921pgsl/checkpoints/epoch=99-step=26399.ckpt'
+  #path_weights: 'vqvae_experts/habitat/2qaebb1z/checkpoints/epoch=58-step=15516.ckpt'
+
+  #0.01
+  #path_weights: 'vqvae_pixel_3/habitat/1m48lk9u/checkpoints/epoch=7-step=2111.ckpt'
+ # path_weights: 'vqvae_image_coord/habitat/1qn5gqmy/checkpoints/epoch=17-step=4751.ckpt'
+
+  #path_weights: 'wandb/run-20210605_115403-1qtpa5m1/files/habitat/1qtpa5m1/checkpoints/epoch=52-step=13991.ckpt'
+  #path_weights: './wandb/run-20210606_162142-8c5n6qes/files/habitat/8c5n6qes/checkpoints/epoch=240-step=23135.ckpt'
+  path_weights: './wandb/run-20210607_070733-1hzle6th/files/habitat/1hzle6th/checkpoints/epoch=61-step=5951.ckpt'
+  
+  #path_weights: './vqvae_pixel_DEF/habitat/1bbjs8v1/checkpoints/epoch=111-step=29567.ckpt'
+
+ 
