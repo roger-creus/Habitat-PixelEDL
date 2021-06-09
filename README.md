@@ -1,6 +1,11 @@
 # PixelEDL: Unsupervised Skill Discovery from Pixels
 #### This project is the Bachelor's Thesis of the Bachelor's Degree in Data Science and Engineering at la Universitat Politècnica de Catalunya (UPC).
+Find the full work report in the main directory "./report.pdf"
 
+## Useful links:
+
+https://imatge-upc.github.io/PixelEDL/
+https://imatge-upc.github.io/PiCoEDL/
 
 ## Installation
 
@@ -83,4 +88,21 @@ python -u -m main.curl_test curl
 ```
 
 Maps are saved in Habitat-PixelEDL/results/ by default
+
+
+#### Image goal-driven Navigation
+
+1) Change the variable DATA_PATH in habitat/config/default.py to specify the scene where to perform image goal-driven navigation
+2) Configure config/curl_RL.yml to specify the path of the pre-trained weights of the ATC encoder
+3) Configure habitat_baselines/config/imagenav/ppo_imagenav_example.py for tuning the PPO model (set path for model checkpoints, total number of steps, directory for saving evaluation videos...)
+4) Run the training of the PPO model from the main directory:
+```
+python -u habitat_baselines/run.py --exp-config habitat_baselines/config/imagenav/ppo_imagenav_example.yaml --run-type train
+```
+5) After trainining, run the evaluation of the model with: 
+```
+python -u habitat_baselines/run.py --exp-config habitat_baselines/config/imagenav/ppo_imagenav_example.yaml --run-type eval
+```
+
+Feel free to open issues for asking for any feature or reporting a bug!
 
