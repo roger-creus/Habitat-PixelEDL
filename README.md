@@ -5,6 +5,7 @@ Find the full work report in the main directory "./report.pdf"
 ## Useful links:
 
 https://imatge-upc.github.io/PixelEDL/
+
 https://imatge-upc.github.io/PiCoEDL/
 
 ## Installation
