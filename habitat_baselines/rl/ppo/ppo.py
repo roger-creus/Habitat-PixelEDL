@@ -69,7 +69,7 @@ class PPO(nn.Module):
 
         return (advantages - advantages.mean()) / (advantages.std() + EPS_PPO)
 
-    def update(self, rollouts: RolloutStorage) -> Tuple[float, float, float]:
+    def update(self, rollouts: RolloutStorage, episode_id) -> Tuple[float, float, float]:
         advantages = self.get_advantages(rollouts)
 
         value_loss_epoch = 0.0
@@ -94,6 +94,7 @@ class PPO(nn.Module):
                     batch["prev_actions"],
                     batch["masks"],
                     batch["actions"],
+                    episode_id
                 )
 
                 ratio = torch.exp(action_log_probs - batch["action_log_probs"])
@@ -153,13 +154,13 @@ class PPO(nn.Module):
         return value_loss_epoch, action_loss_epoch, dist_entropy_epoch
 
     def _evaluate_actions(
-        self, observations, rnn_hidden_states, prev_actions, masks, action
+        self, observations, rnn_hidden_states, prev_actions, masks, action, episode_id
     ):
         r"""Internal method that calls Policy.evaluate_actions.  This is used instead of calling
         that directly so that that call can be overrided with inheritence
         """
         return self.actor_critic.evaluate_actions(
-            observations, rnn_hidden_states, prev_actions, masks, action
+            observations, rnn_hidden_states, prev_actions, masks, action, episode_id
         )
 
     def before_backward(self, loss: Tensor) -> None:

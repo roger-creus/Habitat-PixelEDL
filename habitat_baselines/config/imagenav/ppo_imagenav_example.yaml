@@ -1,19 +1,19 @@
 BASE_TASK_CONFIG_PATH: "configs/tasks/imagenav.yaml"
 TRAINER_NAME: "ppo"
-ENV_NAME: "SkillRLEnv"
-EXP_ID: "SKILLNAV-DISCOVERED-LOCAL"
+ENV_NAME: "NavRLEnv"
+EXP_ID: "IMAGENAV-CURL-MAZE"
 SIMULATOR_GPU_ID: 0
 TORCH_GPU_ID: 0
 VIDEO_OPTION: ["disk"]
 TENSORBOARD_DIR: "tb"
-VIDEO_DIR: "video_dir"
-TEST_EPISODE_COUNT: 2
-EVAL_CKPT_PATH_DIR: "data/SKILLNAV-DISCOVERED-LOCAL_checkpoints"
-NUM_ENVIRONMENTS: 2
+VIDEO_DIR: "video_dir_imagenav_curl_maze"
+TEST_EPISODE_COUNT: 10
+EVAL_CKPT_PATH_DIR: "data/IMAGENAV-CURL-MAZE"
+NUM_ENVIRONMENTS: 4
 SENSORS: ["RGB_SENSOR"]
-CHECKPOINT_FOLDER: "data/SKILLNAV-DISCOVERED-LOCAL_checkpoints"
+CHECKPOINT_FOLDER: "data/IMAGENAV-CURL-MAZE"
 NUM_UPDATES: -1
-TOTAL_NUM_STEPS: 3e6
+TOTAL_NUM_STEPS: 9e6
 LOG_INTERVAL: 25
 NUM_CHECKPOINTS: 10
 
@@ -26,7 +26,7 @@ RL:
     # ppo params
     clip_param: 0.2
     ppo_epoch: 4
-    num_mini_batch: 2
+    num_mini_batch: 4
     value_loss_coef: 0.5
     entropy_coef: 0.01
     lr: 2.5e-4

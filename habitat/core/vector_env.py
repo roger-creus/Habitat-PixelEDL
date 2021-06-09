@@ -68,7 +68,6 @@ def _make_env_fn(
     config: Config, dataset: Optional[habitat.Dataset] = None, rank: int = 0
 ) -> Env:
     """Constructor for default habitat :ref:`env.Env`.
-
     :param config: configuration for environment.
     :param dataset: dataset for environment.
     :param rank: rank for setting seed of environment
@@ -123,8 +122,6 @@ class VectorEnv:
     r"""Vectorized environment which creates multiple processes where each
     process runs its own environment. Main class for parallelization of
     training and evaluation.
-
-
     All the environments are synchronized on step and reset methods.
     """
 
@@ -147,7 +144,6 @@ class VectorEnv:
         workers_ignore_signals: bool = False,
     ) -> None:
         """..
-
         :param make_env_fn: function which creates a single environment. An
             environment can be of type :ref:`env.Env` or :ref:`env.RLEnv`
         :param env_fn_args: tuple of tuple of args to pass to the
@@ -374,7 +370,6 @@ class VectorEnv:
 
     def reset(self):
         r"""Reset all the vectorized environments
-
         :return: list of outputs from the reset method of envs.
         """
         for write_fn in self._connection_write_fns:
@@ -386,7 +381,6 @@ class VectorEnv:
 
     def reset_at(self, index_env: int):
         r"""Reset in the index_env environment in the vector.
-
         :param index_env: index of the environment to be reset
         :return: list containing the output of reset method of indexed env.
         """
@@ -410,7 +404,6 @@ class VectorEnv:
 
     def step_at(self, index_env: int, action: Union[int, str, Dict[str, Any]]):
         r"""Step in the index_env environment in the vector.
-
         :param index_env: index of the environment to be stepped into
         :param action: action to be taken
         :return: list containing the output of step method of indexed env.
@@ -420,7 +413,6 @@ class VectorEnv:
 
     def async_step(self, data: List[Union[int, str, Dict[str, Any]]]) -> None:
         r"""Asynchronously step in the environments.
-
         :param data: list of size _num_envs containing keyword arguments to
             pass to :ref:`step` method for each Environment. For example,
             :py:`[{"action": "TURN_LEFT", "action_args": {...}}, ...]`.
@@ -438,7 +430,6 @@ class VectorEnv:
 
     def step(self, data: List[Union[int, str, Dict[str, Any]]]) -> List[Any]:
         r"""Perform actions in the vectorized environments.
-
         :param data: list of size _num_envs containing keyword arguments to
             pass to :ref:`step` method for each Environment. For example,
             :py:`[{"action": "TURN_LEFT", "action_args": {...}}, ...]`.
@@ -471,10 +462,8 @@ class VectorEnv:
 
     def pause_at(self, index: int) -> None:
         r"""Pauses computation on this env without destroying the env.
-
         :param index: which env to pause. All indexes after this one will be
             shifted down by one.
-
         This is useful for not needing to call steps on all environments when
         only some are active (for example during the last episodes of running
         eval episodes).
@@ -502,7 +491,6 @@ class VectorEnv:
     ) -> Any:
         r"""Calls a function or retrieves a property/member variable (which is passed by name)
         on the selected env and returns the result.
-
         :param index: which env to call the function on.
         :param function_name: the name of the function to call or property to retrieve on the env.
         :param function_args: optional function args.
@@ -521,7 +509,6 @@ class VectorEnv:
     ) -> List[Any]:
         r"""Calls a list of functions (which are passed by name) on the
         corresponding env (by index).
-
         :param function_names: the name of the functions to call on the envs.
         :param function_args_list: list of function args for each function. If
             provided, :py:`len(function_args_list)` should be as long as
@@ -597,7 +584,6 @@ class VectorEnv:
 class ThreadedVectorEnv(VectorEnv):
     r"""Provides same functionality as :ref:`VectorEnv`, the only difference
     is it runs in a multi-thread setup inside a single process.
-
     The :ref:`VectorEnv` runs in a multi-proc setup. This makes it much easier
     to debug when using :ref:`VectorEnv` because you can actually put break
     points in the environment methods. It should not be used for best

@@ -10,39 +10,16 @@ from typing import List, Type, Union
 import habitat
 from habitat import Config, Env, RLEnv, VectorEnv, make_dataset
 
-from src.main.curl_RL import CURL
-from src.config_RL import getConfig, setSeed
-from IPython import embed
-import numpy as np
-import torch
-
-def load_pretrained_encoder():
-    conf = getConfig("curl_RL")
-    conf['curl']['path_goal_states'] = conf['test']['path_goal_states']
-    conf['curl']['load_goal_states'] = True
-    conf['curl']['device'] = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    curl = CURL(conf).cuda()
-    checkpoint = torch.load(conf['test']['path_weights'])
-    curl.load_state_dict(checkpoint['state_dict'])
-
-    for param in curl.parameters():
-        param.requires_grad = False
-
-    return curl
-
 
 def make_env_fn(
     config: Config, env_class: Union[Type[Env], Type[RLEnv]]
 ) -> Union[Env, RLEnv]:
     r"""Creates an env of type env_class with specified config and rank.
     This is to be passed in as an argument when creating VectorEnv.
-
     Args:
         config: root exp config that has core env config node as well as
             env-specific config node.
         env_class: class type of the env to be created.
-
     Returns:
         env object created according to specification.
     """
@@ -51,7 +28,6 @@ def make_env_fn(
     )
     env = env_class(config=config, dataset=dataset)
     env.seed(config.TASK_CONFIG.SEED)
-    env.enc = load_pretrained_encoder()
     return env
 
 
@@ -63,12 +39,10 @@ def construct_envs(
     r"""Create VectorEnv object with specified config and env class type.
     To allow better performance, dataset are split into small ones for
     each individual env, grouped by scenes.
-
     :param config: configs that contain num_environments as well as information
     :param necessary to create individual environments.
     :param env_class: class type of the envs to be created.
     :param workers_ignore_signals: Passed to :ref:`habitat.VectorEnv`'s constructor
-
     :return: VectorEnv object created according to specification.
     """
 
@@ -79,6 +53,8 @@ def construct_envs(
     scenes = config.TASK_CONFIG.DATASET.CONTENT_SCENES
     if "*" in config.TASK_CONFIG.DATASET.CONTENT_SCENES:
         scenes = dataset.get_scenes_to_load(config.TASK_CONFIG.DATASET)
+        scenes.append(scenes[0])
+        scenes.append(scenes[0])
         scenes.append(scenes[0])
 
     if num_environments > 1:

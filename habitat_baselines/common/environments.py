@@ -93,14 +93,14 @@ class NavRLEnv(habitat.RLEnv):
         return self.habitat_env.get_metrics()
 
 
-@baseline_registry.register_env(name="SkillRLEnv")
-class SkillRLEnv(habitat.RLEnv):
+@baseline_registry.register_env(name="SkillNavEnv")
+class SkillNavEnv(habitat.RLEnv):
     def __init__(self, config: Config, dataset: Optional[Dataset] = None):
         self._rl_config = config.RL
         self._core_env_config = config.TASK_CONFIG
         self._reward_measure_name = self._rl_config.REWARD_MEASURE
         self._success_measure_name = self._rl_config.SUCCESS_MEASURE
-        self.enc = None
+        self.enc = self.load_pretrained_encoder()
         self._previous_measure = None
         self._previous_action = None
         super().__init__(self._core_env_config, dataset)
@@ -113,6 +113,22 @@ class SkillRLEnv(habitat.RLEnv):
         ]
         return observations
 
+    def load_pretrained_encoder(self):
+        conf = getConfig("curl_RL")
+        conf['curl']['path_goal_states'] = conf['test']['path_goal_states']
+        conf['curl']['load_goal_states'] = True
+        conf['curl']['device'] = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        curl = CURL(conf).cuda()
+        checkpoint = torch.load(conf['test']['path_weights'])
+        curl.load_state_dict(checkpoint['state_dict'])
+
+        for param in curl.parameters():
+            param.requires_grad = False
+
+        return curl
+
+
     def step(self, *args, **kwargs):
         self._previous_action = kwargs["action"]
         return super().step(*args, **kwargs)
@@ -121,7 +137,7 @@ class SkillRLEnv(habitat.RLEnv):
         return (
             #self._rl_config.SLACK_REWARD - 1.0,
             #self._rl_config.SUCCESS_REWARD + 1.0,
-            0-1,1+1
+            0,1
         )
 
     def get_reward(self, observations):

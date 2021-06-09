@@ -29,7 +29,7 @@ _C.SEED = 100
 # ENVIRONMENT
 # -----------------------------------------------------------------------------
 _C.ENVIRONMENT = CN()
-_C.ENVIRONMENT.MAX_EPISODE_STEPS = 1000
+_C.ENVIRONMENT.MAX_EPISODE_STEPS = 150
 _C.ENVIRONMENT.MAX_EPISODE_SECONDS = 10000000
 _C.ENVIRONMENT.ITERATOR_OPTIONS = CN()
 _C.ENVIRONMENT.ITERATOR_OPTIONS.CYCLE = True
@@ -211,7 +211,13 @@ _C.SIMULATOR.TYPE = "Sim-v0"
 _C.SIMULATOR.ACTION_SPACE_CONFIG = "v0"
 _C.SIMULATOR.FORWARD_STEP_SIZE = 0.25  # in metres
 _C.SIMULATOR.SCENE = (
-    "data/scene_datasets/mp3d/17DRP5sb8fy/17DRP5sb8fy.glb"
+    #"data/scene_datasets/mp3d/17DRP5sb8fy/17DRP5sb8fy.glb"
+    
+    #maze
+    "data/scene_datasets/mp3d/8WUmhLawc2A/8WUmhLawc2A.glb"
+
+    #circular
+    #"data/scene_datasets/mp3d/29hnd4uzFmX/29hnd4uzFmX.glb"
 )
 _C.SIMULATOR.SEED = _C.SEED
 _C.SIMULATOR.TURN_ANGLE = 10  # angle to rotate left or right in degrees
@@ -331,7 +337,14 @@ _C.DATASET.SPLIT = "train"
 _C.DATASET.SCENES_DIR = "data/scene_datasets"
 _C.DATASET.CONTENT_SCENES = ["*"]
 _C.DATASET.DATA_PATH = (
-    "data/datasets/pointnav/mp3d/v1/train/content/skill-nav.json.gz"
+    #"data/datasets/pointnav/mp3d/v1/train/content/skill-nav.json.gz"
+    #"data/datasets/pointnav/mp3d/v1/train/content/17DRP5sb8fy.json.gz"
+
+    #maze
+    "data/datasets/pointnav/mp3d/v1/train/content/8WUmhLawc2A.json.gz" 
+    
+    #circular
+    #"data/datasets/pointnav/mp3d/v1/train/content/29hnd4uzFmX.json.gz"
 )
 
 # -----------------------------------------------------------------------------

@@ -189,7 +189,6 @@ class PPOTrainer(BaseRLTrainer):
         if config is None:
             config = self.config
 
-
         self.envs = construct_envs(
             config,
             get_env_class(config.ENV_NAME),
@@ -405,6 +404,8 @@ class PPOTrainer(BaseRLTrainer):
                 env_slice,
             ]
 
+            current_episodes = self.envs.current_episodes()
+
             profiling_wrapper.range_push("compute actions")
             (
                 values,
@@ -416,6 +417,7 @@ class PPOTrainer(BaseRLTrainer):
                 step_batch["recurrent_hidden_states"],
                 step_batch["prev_actions"],
                 step_batch["masks"],
+                current_episodes[0].episode_id
             )
 
         # NB: Move actions to CPU.  If CUDA tensors are
@@ -527,6 +529,7 @@ class PPOTrainer(BaseRLTrainer):
     def _update_agent(self):
         ppo_cfg = self.config.RL.PPO
         t_update_model = time.time()
+        current_episodes = self.envs.current_episodes()
         with torch.no_grad():
             step_batch = self.rollouts.buffers[
                 self.rollouts.current_rollout_step_idx
@@ -537,6 +540,7 @@ class PPOTrainer(BaseRLTrainer):
                 step_batch["recurrent_hidden_states"],
                 step_batch["prev_actions"],
                 step_batch["masks"],
+                current_episodes[0].episode_id
             )
 
         self.rollouts.compute_returns(
@@ -546,7 +550,8 @@ class PPOTrainer(BaseRLTrainer):
         self.agent.train()
 
         value_loss, action_loss, dist_entropy = self.agent.update(
-            self.rollouts
+            self.rollouts,
+            current_episodes[0].episode_id
         )
 
         self.rollouts.after_update()
@@ -961,6 +966,7 @@ class PPOTrainer(BaseRLTrainer):
                     test_recurrent_hidden_states,
                     prev_actions,
                     not_done_masks,
+                    current_episodes[0].episode_id,
                     deterministic=False,
                 )
 
@@ -1006,6 +1012,14 @@ class PPOTrainer(BaseRLTrainer):
                     pbar.update()
                     episode_stats = {}
                     episode_stats["reward"] = current_episode_reward[i].item()
+
+                    ### WANDB LOGGER
+                    exp_metrics = {"reward":current_episode_reward[i].item()}
+                    #exp_metrics.update(episode_stats["reward"])
+                    #exp_metrics.update(losses)
+                    
+                    wandb.log(exp_metrics)
+
                     episode_stats.update(
                         self._extract_scalars_from_info(infos[i])
                     )
@@ -1083,5 +1097,6 @@ class PPOTrainer(BaseRLTrainer):
         metrics = {k: v for k, v in aggregated_stats.items() if k != "reward"}
         if len(metrics) > 0:
             writer.add_scalars("eval_metrics", metrics, step_id)
+
 
         self.envs.close()

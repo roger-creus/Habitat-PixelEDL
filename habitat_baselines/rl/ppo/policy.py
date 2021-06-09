@@ -47,10 +47,11 @@ class Policy(nn.Module, metaclass=abc.ABCMeta):
         rnn_hidden_states,
         prev_actions,
         masks,
+        episode_id,
         deterministic=False,
     ):
         features, rnn_hidden_states = self.net(
-            observations, rnn_hidden_states, prev_actions, masks
+            observations, rnn_hidden_states, prev_actions, masks, episode_id
         )
         distribution = self.action_distribution(features)
         value = self.critic(features)
@@ -64,17 +65,17 @@ class Policy(nn.Module, metaclass=abc.ABCMeta):
 
         return value, action, action_log_probs, rnn_hidden_states
 
-    def get_value(self, observations, rnn_hidden_states, prev_actions, masks):
+    def get_value(self, observations, rnn_hidden_states, prev_actions, masks, episode_id):
         features, _ = self.net(
-            observations, rnn_hidden_states, prev_actions, masks
+            observations, rnn_hidden_states, prev_actions, masks, episode_id
         )
         return self.critic(features)
 
     def evaluate_actions(
-        self, observations, rnn_hidden_states, prev_actions, masks, action
+        self, observations, rnn_hidden_states, prev_actions, masks, action, episode_id
     ):
         features, rnn_hidden_states = self.net(
-            observations, rnn_hidden_states, prev_actions, masks
+            observations, rnn_hidden_states, prev_actions, masks, episode_id
         )
         distribution = self.action_distribution(features)
         value = self.critic(features)
@@ -192,7 +193,7 @@ class PointNavBaselineNet(Net):
             #curl.load_state_dict(checkpoint['state_dict'])
 
             #for param in curl.parameters():
-            #     param.requires_grad = False
+            #    param.requires_grad = False
 
             #self.goal_visual_encoder = curl
 
@@ -207,14 +208,14 @@ class PointNavBaselineNet(Net):
         conf = getConfig("curl_RL")
         #conf['curl']['path_goal_states'] = conf['test']['path_goal_states']
         #conf['curl']['load_goal_states'] = True
-        conf['curl']['device'] = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        #conf['curl']['device'] = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         curl = CURL(conf).cuda()
         checkpoint = torch.load(conf['test']['path_weights'])
         curl.load_state_dict(checkpoint['state_dict'])
 
         for param in curl.parameters():
-             param.requires_grad = False
+            param.requires_grad = False
 
         self.visual_encoder = curl
 
@@ -238,7 +239,7 @@ class PointNavBaselineNet(Net):
     def num_recurrent_layers(self):
         return self.state_encoder.num_recurrent_layers
 
-    def forward(self, observations, rnn_hidden_states, prev_actions, masks):
+    def forward(self, observations, rnn_hidden_states, prev_actions, masks, episode_id):
         if IntegratedPointGoalGPSAndCompassSensor.cls_uuid in observations:
             target_encoding = observations[
                 IntegratedPointGoalGPSAndCompassSensor.cls_uuid
@@ -248,14 +249,27 @@ class PointNavBaselineNet(Net):
             target_encoding = observations[PointGoalSensor.cls_uuid]
         elif ImageGoalSensor.cls_uuid in observations:
             image_goal = observations[ImageGoalSensor.cls_uuid]
-            target_encoding = torch.FloatTensor(self.visual_encoder.forward_single(image_goal)).cuda()
+            size = observations["rgb"].size(0)
+            if size == 1:
+                target_encoding = torch.FloatTensor(self.visual_encoder.forward_single(image_goal)).unsqueeze(0).cuda()
+            else:
+                target_encoding = torch.FloatTensor(self.visual_encoder.forward_single(image_goal)).cuda()
 
+
+        # ONLY EPISOIDE ID FOR REWARD
         x = [target_encoding]
+        
+        size = observations["rgb"].size(0)
+        if size == 1:
+            #x = [self.visual_encoder.goal_states[int(episode_id[0])].unsqueeze(0)]
+            perception_embed = torch.FloatTensor(self.visual_encoder.forward_single(observations["rgb"])).unsqueeze(0).cuda()
+        else:
+            #x = [self.visual_encoder.goal_states[int(episode_id[0])].unsqueeze(0).repeat(observations["rgb"].size(0),1)]
+            perception_embed = torch.FloatTensor(self.visual_encoder.forward_single(observations["rgb"])).cuda()
 
-        #if not self.is_blind:
-        perception_embed = torch.FloatTensor(self.visual_encoder.forward_single(observations["rgb"])).cuda()
         x = [perception_embed] + x
 
+        
         x_out = torch.cat(x, dim=1)
         x_out, rnn_hidden_states = self.state_encoder(
             x_out, rnn_hidden_states, masks
